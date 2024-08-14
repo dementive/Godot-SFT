@@ -1,6 +1,6 @@
 # Godot-SFT
 
-Godot - SFT is a extremely simple testing framework for Godot 4 GDExtension C++ that allows you to easily test your extension code with C++ macros.
+Godot-SFT is a extremely simple testing framework for Godot 4 GDExtension C++ that allows you to easily test your extension code with C++ macros.
 
 After a lot of searching I couldn't find a single testing framework for C++ that wasn't either a massive pain to get working with gdextension or just way too complicated for no good reason. So here is my stupid simple testing "framework" that does everytihng I will ever need it to do in only like 50 lines of code.
 
@@ -122,7 +122,9 @@ This command will check if any of the tests failed and if any of them do the ret
 ## Official SFT Haiku
 
 Testing is stupid
+
 I hate stupid fucking tests
+
 Why must I test it
 
 ## License
