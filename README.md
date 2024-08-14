@@ -104,7 +104,7 @@ elif env.get("is_msvc", False):
 env.Append(CXXFLAGS=['-Wno-template-id-cdtor'])
 ```
 
-If you really just can't stand to use C++20 you can remove the TESTS and NAMED_TESTS macros from SFT.hpp and use the CHECK and NAMED macros directly (im not sure why you would do this).
+If you really just can't stand to use C++20 you can remove the `TESTS` and `NAMED_TESTS` macros from SFT.hpp and use the `CHECK` and `CHECK_NAMED` macros directly (im not sure why you would do this).
 
 ## Usage
 
