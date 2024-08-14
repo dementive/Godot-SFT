@@ -1,8 +1,8 @@
 # Godot-SFT
 
-Godot-SFT is a extremely simple testing framework for Godot 4 GDExtension C++ that allows you to easily test your extension code with C++ macros.
+Godot-SFT is a extremely simple testing library for Godot 4 GDExtension C++ that allows you to easily test your extension code with C++ macros.
 
-After a lot of searching I couldn't find a single testing framework for C++ that wasn't either a massive pain to get working with gdextension or just way too complicated for no good reason. So here is my stupid simple testing "framework" that does everytihng I will ever need it to do in only like 50 lines of code.
+After a lot of searching I couldn't find a single testing framework for C++ that wasn't either a massive pain to get working with gdextension or just way too complicated for no good reason. So here is my stupid simple testing "library" that does everytihng I will ever need it to do in only like 50 lines of code.
 
 ## Example Usage
 
@@ -134,7 +134,9 @@ The tests can be run from anywhere in your gdextension code, running them from t
 Setting up automated testing is easy and you should do it. If your tests print to stdout (they will unless you change SFT.hpp) you can call godot with `godot --headless --quit` in your project's root to get godot to print your test results and then immediately quit.
 I have provided a simple script: `automated_testing.gd` that can be run with the following command to automate tests using something like pre-commit or github actions:
 
-`touch output.txt && godot --headless --quit > output.txt && godot --headless --script ./automated_testing.gd`
+```bash
+touch output.txt && godot --headless --quit > output.txt && godot --headless --script ./automated_testing.gd
+```
 
 This command will check if any of the tests failed and if any of them do the return code will be -1.
 
