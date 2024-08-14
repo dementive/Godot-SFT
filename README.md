@@ -14,13 +14,13 @@ After a lot of searching I couldn't find a single testing framework for C++ that
 
 #ifdef TESTS_ENABLED
 
-void do_tests() {
+// clang-format off
+void test_dictionary() {
     godot::Dictionary map;
     map["Hello"] = 0;
     map["Hey"] = 999;
     map["this_test_will_fail"] = -1;
 
-    // clang-format off
     TESTS(
         "dictionary_test",
         map["Hello"] == godot::Variant(0),
@@ -32,23 +32,31 @@ void do_tests() {
 
     NAMED_TESTS(
         "Dictionary Variant Test",
-        PAIR("Check equal to 0", map["Hello"] == godot::Variant(0)),
-        PAIR("Check equal to 999", map["Hey"] == godot::Variant(999)),
-        PAIR("This will always fail why even test it?", map["this_test_will_fail"] == godot::Variant(999)),
-        PAIR("Check for non-existent member", map.has("Howdy")),
-        PAIR("Check if size is 3", map.size() == 3)
+        "Check equal to 0", VAR_CHECK(map["Hello"], 0),
+        "Check equal to 999", VAR_CHECK(map["Hey"], 999),
+        "This will always fail why even test it?", VAR_CHECK(map["this_test_will_fail"], 999),
+        "Check for non-existent member", map.has("Howdy"),
+        "Check if size is 3", NUM_CHECK(map.size(), 3)
     )
+}
 
+void test_custom_object() {
     CustomObject *custom_object = memnew(CustomObject());
     custom_object->set_name("CustomObjectName");
 
     NAMED_TESTS(
         "custom_object_tests",
-        PAIR("CustomObject nullptr test", NULL_CHECK(custom_object)),
-        PAIR("CustomObject get_name", STRING_CHECK(custom_object->get_name(), "WrongName"))
+        "CustomObject nullptr test", NULL_CHECK(custom_object),
+        "CustomObject get_name", STRING_CHECK(custom_object->get_name(), "WrongName"),
+        "CustomObject get_custom_function", VAR_CHECK(custom_object->get_custom_function(), "CustomFunctionReturn")
     )
     memdelete(custom_object);
-    // clang-format on
+}
+// clang-format on
+
+void do_tests() {
+    test_dictionary();
+    test_custom_object();
 }
 
 #endif // TESTS_ENABLED
@@ -86,6 +94,7 @@ Check if size is 3                                | Passed
 custom_object_tests
 CustomObject nullptr test                         | Passed
 CustomObject get_name                             | Failed: custom_object->get_name() = StringName("WrongName")
+CustomObject get_custom_function                  | Passed
 ```
 
 Note that the `TESTS_ENABLED` define must be enabled at compile time to use the macros to prevent you from accidentally shipping test code. You can enable it in your Sconstruct file like this:
@@ -148,26 +157,6 @@ I hate stupid fucking tests
 
 Why must I test it
 
-## License
+## Screenshots
 
-MIT License
-
-Copyright (c) 2024 Dementive
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+![Screenshot 1](/assets/1.png)
