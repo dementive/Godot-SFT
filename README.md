@@ -82,7 +82,7 @@ I highly reccomend you use the clangd LSP or the macros might be kind of awful t
 
 IMPORTANT NOTE: SFT uses `__VA_OPT__` for some of the macro magic, which means it requires C++20 so you'll need to add the following to your SConstruct file to compile your GDExtension with C++20
 
-```
+```python
 # Option to use C++20 for this extension by replacing CXXFLAGS
 if env.get("is_msvc", False):
    env.Replace(CXXFLAGS=["/std:c++20"])
