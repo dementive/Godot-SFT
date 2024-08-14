@@ -75,8 +75,8 @@ The `TESTS` macro can be used to check any number of conditions, the output of t
 dictionary_assignment
 1                                | Passed
 2                                | Passed
-3                                | Failed: map["this_test_will_fail"] == godot::Variant(999)
-4                                | Failed: map.has("Howdy")
+3                                | Failed [Tests.cpp:16] - map["this_test_will_fail"] == godot::Variant(999)
+4                                | Failed [Tests.cpp:16] - map.has("Howdy")
 5                                | Passed
 ```
 
@@ -87,13 +87,13 @@ The `NAMED_TESTS` macro can be used to check any number of conditions and also g
 Dictionary Variant Test
 Check equal to 0                                  | Passed
 Check equal to 999                                | Passed
-This will always fail why even test it?           | Failed: map["this_test_will_fail"] == godot::Variant(999)
-Check for non-existent member                     | Failed: map.has("Howdy")
+This will always fail why even test it?           | Failed [Tests.cpp:24] - map["this_test_will_fail"] == godot::Variant(999)
+Check for non-existent member                     | Failed [Tests.cpp:24] - map.has("Howdy")
 Check if size is 3                                | Passed
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 custom_object_tests
 CustomObject nullptr test                         | Passed
-CustomObject get_name                             | Failed: custom_object->get_name() = StringName("WrongName")
+CustomObject get_name                             | Failed [Tests.cpp:38] - custom_object->get_name() = StringName("WrongName")
 CustomObject get_custom_function                  | Passed
 ```
 
