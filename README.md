@@ -10,6 +10,7 @@ After a lot of searching I couldn't find a single testing framework for C++ that
 // Test.cpp
 
 #include "SFT.hpp"
+#include "CustomObject.hpp"
 
 #ifdef TESTS_ENABLED
 
@@ -37,6 +38,16 @@ void do_tests() {
         PAIR("Check for non-existent member", map.has("Howdy")),
         PAIR("Check if size is 3", map.size() == 3)
     )
+
+    CustomObject *custom_object = memnew(CustomObject());
+    custom_object->set_name("CustomObjectName");
+
+    NAMED_TESTS(
+        "custom_object_tests",
+        PAIR("CustomObject nullptr test", NULL_CHECK(custom_object)),
+        PAIR("CustomObject get_name", STRING_CHECK(custom_object->get_name(), "WrongName"))
+    )
+    memdelete(custom_object);
     // clang-format on
 }
 
@@ -52,21 +63,29 @@ You can test any condition with a named test suite as the first argument and the
 The `TESTS` macro can be used to check any number of conditions, the output of the `TESTS` in the above example looks like this:
 
 ```
-Test [dictionary_assignment : 1] - Passed
-Test [dictionary_assignment : 2] - Passed
-Test [dictionary_assignment : 3] - Failed
-Test [dictionary_assignment : 4] - Failed
-Test [dictionary_assignment : 5] - Passed
+------------------------------------------------------------------------------------------------------------------------------------------------------
+dictionary_assignment
+1                                | Passed
+2                                | Passed
+3                                | Failed: map["this_test_will_fail"] == godot::Variant(999)
+4                                | Failed: map.has("Howdy")
+5                                | Passed
 ```
 
 The `NAMED_TESTS` macro can be used to check any number of conditions and also give a name to each check, the output of the `NAMED_TESTS` in the above example looks like this:
 
 ```
-Test [Dictionary Assignment Tests : Check equal to 0] - Passed
-Test [Dictionary Assignment Tests : Check equal to 999] - Passed
-Test [Dictionary Assignment Tests : This will always fail why even test it?] - Failed
-Test [Dictionary Assignment Tests : Check for non-existent member] - Failed
-Test [Dictionary Assignment Tests : Check if size is 3] - Passed
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Dictionary Variant Test
+Check equal to 0                                  | Passed
+Check equal to 999                                | Passed
+This will always fail why even test it?           | Failed: map["this_test_will_fail"] == godot::Variant(999)
+Check for non-existent member                     | Failed: map.has("Howdy")
+Check if size is 3                                | Passed
+------------------------------------------------------------------------------------------------------------------------------------------------------
+custom_object_tests
+CustomObject nullptr test                         | Passed
+CustomObject get_name                             | Failed: custom_object->get_name() = StringName("WrongName")
 ```
 
 Note that the `TESTS_ENABLED` define must be enabled at compile time to use the macros to prevent you from accidentally shipping test code. You can enable it in your Sconstruct file like this:
