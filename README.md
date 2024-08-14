@@ -49,7 +49,7 @@ do_tests()
 ```
 You can test any condition with a named test suite as the first argument and then all other arguments will be the conditions to check for the test. The conditions can be any code that returns a bool.
 
-The TESTS macro can be used to check any number of conditions, the output of the TESTS in the above example looks like this:
+The `TESTS` macro can be used to check any number of conditions, the output of the `TESTS` in the above example looks like this:
 
 ```
 Test [dictionary_assignment : 1] - Passed
@@ -59,7 +59,7 @@ Test [dictionary_assignment : 4] - Failed
 Test [dictionary_assignment : 5] - Passed
 ```
 
-The NAMED_TESTS macro can be used to check any number of conditions and also give a name to each check, the output of the NAMED_TESTS in the above example looks like this:
+The `NAMED_TESTS` macro can be used to check any number of conditions and also give a name to each check, the output of the `NAMED_TESTS` in the above example looks like this:
 
 ```
 Test [Dictionary Assignment Tests : Check equal to 0] - Passed
@@ -69,7 +69,7 @@ Test [Dictionary Assignment Tests : Check for non-existent member] - Failed
 Test [Dictionary Assignment Tests : Check if size is 3] - Passed
 ```
 
-Note that the TESTS_ENABLED define must be enabled at compile time to use the macros to prevent you from accidentally shipping test code. You can enable it in your Sconstruct file like this:
+Note that the `TESTS_ENABLED` define must be enabled at compile time to use the macros to prevent you from accidentally shipping test code. You can enable it in your Sconstruct file like this:
 
 ```python
 if env["target"] == "template_debug":
