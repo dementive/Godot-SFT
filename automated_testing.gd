@@ -11,7 +11,7 @@ func _init():
 	file.close()
 	var lines = content.split("\n")
 	for line in lines:
-		if line.contains("Failed:"):
+		if line.contains("Failed"):
 			failed_tests.append(line)
 
 	# Delete temp output file
