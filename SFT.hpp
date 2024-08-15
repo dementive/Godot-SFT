@@ -10,7 +10,7 @@
 #define SFT_H
 
 // Uncomment this so clangd can actually work in the ifdefs...make sure to redisable it before compiling!
-#define TESTS_ENABLED
+// #define TESTS_ENABLED
 
 #ifdef TESTS_ENABLED
 
@@ -49,13 +49,46 @@ This effectively makes it so:
 1. All tests will always be run even if some tests that rely on a valid pointer fail.
 2. The program won't crash because it is trying to run tests on a nullptr.
 
-So I think this is a solid use case for goto. Clangd will also let you know if the label doesn't exist so it's pretty hard to mess up and easy to debug.
+So I think this is a phenomenal use case for goto. Clangd will also let you know if the label doesn't exist so it's pretty hard to mess up and easy to debug.
 */
-#define NULL_CHECK(first)                                                                                                                                                     \
-    if (first == nullptr) {                                                                                                                                                   \
-        TEST_FAIL(godot::vformat("%s nullptr check", #first), godot::vformat("%s is a nullptr!", #first))                                                                     \
-        goto null_##first;                                                                                                                                                    \
+#define NULL_CHECK(object)                                                                                                                                                    \
+    if (object == nullptr) {                                                                                                                                                  \
+        TEST_FAIL(godot::vformat("%s nullptr check", #object), godot::vformat("%s is a nullptr!", #object))                                                                   \
+        goto null_##object;                                                                                                                                                   \
     }
+
+/*
+Make sure to use TEST_POINTER_END on object_name after this at some point or it won't compile.
+Note that because of the goto usage in NULL_CHECK if you declare any variables after TEST_POINTER and before TEST_POINTER_END they will have to be wrapped in a scoped block
+"{}"" or the goto will not compile. More info here: https://stackoverflow.com/a/14274292
+Example:
+_ALWAYS_INLINE_ void test_stellar_body() {
+    TEST_POINTER(Control, main_menu)
+    {
+        int x = 0; // Declaring this variable makes it so you have to do a scoped block :(
+        main_menu->get_name();
+        NAMED_TESTS(
+            "main_menu_tests",
+            "MainMenu get_name", STRING_CHECK(main_menu->get_name(), "Menu"),
+        )
+    }
+    TEST_POINTER_END(main_menu)
+
+    // If you do the same thing without any variable declarations you don't need the scoped block.
+    TEST_POINTER(Control, loading_screen)
+    loading_screen->get_name();
+    NAMED_TESTS(
+        "loading_screen_tests",
+        "LoadingScreen get_name", STRING_CHECK(star->loading_screen(), "LoadingScreen"),
+    )
+    TEST_POINTER_END(loading_screen)
+}
+*/
+#define TEST_POINTER(class_name, object_name)                                                                                                                                 \
+    class_name *object_name = memnew(class_name());                                                                                                                           \
+    NULL_CHECK(object_name)
+
+#define TEST_POINTER_END(object_name) null_##object_name : memdelete(object_name);
 
 // Defines you or I will never need to change (hopefully)
 #define TEST_MESSAGE(condition) condition ? TEST_PASS_MESSAGE : TEST_FAIL_MESSAGE

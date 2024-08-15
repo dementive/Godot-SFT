@@ -44,25 +44,13 @@ void test_dictionary() {
 }
 
 void test_custom_object() {
-    CustomObject *custom_object = memnew(CustomObject());
-
-    // NULL_CHECK checks if a pointer is nullptr, if it is it reports the failure and returns from this function so later access to the pointer won't crash the program.
-    // Use NULL_CHECK in your tests before accessing a pointer from memnew to ensure the rest of the your tests that are outside this function actually get executed and they don't crash if they fail.
-    // You can of course just do your own null checks but this way has the cleanest interface imo.
-    NULL_CHECK(custom_object)
-
-    custom_object->set_name("CustomObjectName");
-
+    TEST_POINTER(CustomObject, custom_object) // TEST_POINTER safely tests a pointer to an object in a way that will never crash and never skip any other tests, see SFT.hpp for more info.
     NAMED_TESTS(
         "custom_object_tests",
         "CustomObject get_name", STRING_CHECK(custom_object->get_name(), "WrongName"),
         "CustomObject get_custom_function", VAR_CHECK(custom_object->get_custom_function(), "CustomFunctionReturn")
     )
-
-    // Label to jump to from NULL_CHECK if the pointer was null.
-    // SFT uses a goto to ensure all tests are run, even if tests that rely on valid pointers can't be run because the pointer is null, see SFT.hpp for more info on this.
-    null_custom_object:
-    memdelete(custom_object);
+    TEST_POINTER_END(custom_object) // TEST_POINTER_END must be put at the end of the thing TEST_POINTER is testing so it can clean itself up. 
 }
 
 void test_custom_scene() {
