@@ -40,37 +40,46 @@ void test_dictionary() {
         "Check equal to 999", VAR_CHECK(map["Hey"], 999),
         "This will always fail why even test it?", VAR_CHECK(map["this_test_will_fail"], 999),
         "Check for non-existent member", map.has("Howdy"),
-        "Check if size is 3", NUM_CHECK(map.size(), 3)
     )
 }
 
 void test_custom_object() {
     CustomObject *custom_object = memnew(CustomObject());
+
+    // NULL_CHECK checks if a pointer is nullptr, if it is it reports the failure and returns from this function so later access to the pointer won't crash the program.
+    // Use NULL_CHECK in your tests before accessing a pointer from memnew to ensure the rest of the your tests that are outside this function actually get executed and they don't crash if they fail.
+    // You can of course just do your own null checks but this way has the cleanest interface imo.
+    NULL_CHECK(custom_object)
+
     custom_object->set_name("CustomObjectName");
 
     NAMED_TESTS(
         "custom_object_tests",
-        "CustomObject nullptr test", NULL_CHECK(custom_object),
         "CustomObject get_name", STRING_CHECK(custom_object->get_name(), "WrongName"),
         "CustomObject get_custom_function", VAR_CHECK(custom_object->get_custom_function(), "CustomFunctionReturn")
     )
+
+    // Label to jump to from NULL_CHECK if the pointer was null.
+    // SFT uses a goto to ensure all tests are run, even if tests that rely on valid pointers can't be run because the pointer is null, see SFT.hpp for more info on this.
+    null_custom_object:
     memdelete(custom_object);
 }
 
 void test_custom_scene() {
-    // The TEST_SCENE macro can be used to test scenes, it will try to load the scene, let you know if it fails, and allows you to pass in any amount of other tests.
-    Control *root_node; // A pointer to a variable named root_node has to be declared before TEST_SCENE. This is kinda stupid but the only alternative (I could think of) is passing in a custom function, which seemed more stupid than this somehow.
-    TEST_SCENE(
-        "res://scenes/main_menu.tscn",
-        Control,
-    )
+    // The TEST_SCENE macro can be used to test scenes, it will try to load the scene, let you know if it fails, and will "return" the root node of the scene to allow you to perform more tests on it.
+    Control *root_node; // A pointer to a variable named root_node has to be declared before TEST_SCENE and passed into it. This is kinda stupid but the only alternative (I could think of) is passing in a custom function, which seemed more stupid than this somehow.
+    TEST_SCENE("res://scenes/main_menu.tscn", Control, root_node)
+
+    // Note that TEST_SCENE will do the NULL_CHECK for you on root_node...so you can be 100% sure it will exist after TEST_SCENE is run otherwise the code will have returned.
+
     NAMED_TESTS(
         "MainMenu Tests",
-        "visibility", object.is_visible()
+        "visibility", root_node->is_visible()
     )
 
-    // Additional checks are optional, if you don't pass in any more it will still test if the scene is possible to instantiate
-    TEST_SCENE("res://scenes/broken_scene.tscn", Control)
+    // Additional checks are optional, if you don't pass in any more it will still test if the scene is possible to instantiate.
+    Control *broken_root_node
+    TEST_SCENE("res://scenes/broken_scene.tscn", Control, broken_root_node)
 }
 
 // clang-format on
@@ -116,8 +125,8 @@ CustomObject get_custom_function                  | Passed
 MainMenu Tests
 visibility                                        | Passed
 
-Scene Test scenes/main_menu.tscn                  | Passed
-Scene Test scenes/main_menu.tscn                  | Failed [Tests.cpp:64] - res://scenes/broken_scene.tscn could not be instantiated.
+Scene Test: scenes/main_menu.tscn                 | Passed
+Scene Test: scenes/main_menu.tscn                 | Failed [Tests.cpp:64] - res://scenes/broken_scene.tscn could not be instantiated.
 ```
 
 Note that the `TESTS_ENABLED` define must be enabled at compile time to use the macros to prevent you from accidentally shipping test code. You can enable it in your Sconstruct file like this:
