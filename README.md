@@ -75,6 +75,7 @@ void test_custom_scene() {
 void do_tests() {
     test_dictionary();
     test_custom_object();
+    test_custom_scene();
 }
 
 #endif // TESTS_ENABLED
