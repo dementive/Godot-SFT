@@ -62,7 +62,7 @@ Make sure to use TEST_POINTER_END on object_name after this at some point or it 
 Note that because of the goto usage in NULL_CHECK if you declare any variables after TEST_POINTER and before TEST_POINTER_END they will have to be wrapped in a scoped block
 "{}"" or the goto will not compile. More info here: https://stackoverflow.com/a/14274292
 Example:
-_ALWAYS_INLINE_ void test_stellar_body() {
+_ALWAYS_INLINE_ void test_gui() {
     TEST_POINTER(Control, main_menu)
     {
         int x = 0; // Declaring this variable makes it so you have to do a scoped block :(
@@ -89,6 +89,7 @@ _ALWAYS_INLINE_ void test_stellar_body() {
     NULL_CHECK(object_name)
 
 #define TEST_POINTER_END(object_name) null_##object_name : memdelete(object_name);
+#define TEST_SCENE_END(object_name) null_##object_name :;
 
 // Defines you or I will never need to change (hopefully)
 #define TEST_MESSAGE(condition) condition ? TEST_PASS_MESSAGE : TEST_FAIL_MESSAGE
@@ -98,23 +99,25 @@ _ALWAYS_INLINE_ void test_stellar_body() {
 inline int SFT_check_number = 1;
 
 // This uses a do-while loop to avoid if/else nesting hell while also not using a return statement to allow multiple TEST_SCENE calls in a single function.
-// The nullptr check does return though to prevent root_node_variable_name access crashing the program.
-#define TEST_SCENE(scene_path, root_node_class_name, root_node_variable_name)                                                                                                 \
+// The nullptr check does return though to prevent object_name access crashing the program.
+// TEST_SCENE works pretty much exactly like TEST_POINTER. Make sure to call TEST_SCENE_END at the end of the test.
+#define TEST_SCENE(scene_path, root_node_class_name, object_name)                                                                                                             \
+    root_node_class_name *object_name;                                                                                                                                        \
     do {                                                                                                                                                                      \
         if (!ResourceLoader::get_singleton()->exists(scene_path)) {                                                                                                           \
             SCENE_TEST_FAIL_MESSAGE(String(scene_path), "does not exist");                                                                                                    \
             break;                                                                                                                                                            \
         }                                                                                                                                                                     \
-        Ref<PackedScene> scene_ref##_root_node_variable_name = ResourceLoader::get_singleton()->load(scene_path);                                                             \
-        if (!scene_ref##_root_node_variable_name->can_instantiate()) {                                                                                                        \
+        Ref<PackedScene> scene_ref##_object_name = ResourceLoader::get_singleton()->load(scene_path);                                                                         \
+        if (!scene_ref##_object_name->can_instantiate()) {                                                                                                                    \
             SCENE_TEST_FAIL_MESSAGE(String(scene_path), "could not be instantiated");                                                                                         \
             break;                                                                                                                                                            \
         }                                                                                                                                                                     \
-        Node *node##_root_node_variable_name = scene_ref##_root_node_variable_name->instantiate();                                                                            \
-        root_node_variable_name = Object::cast_to<root_node_class_name>(node##_root_node_variable_name);                                                                      \
-        if (root_node_variable_name == nullptr) {                                                                                                                             \
+        Node *node##_object_name = scene_ref##_object_name->instantiate();                                                                                                    \
+        object_name = Object::cast_to<root_node_class_name>(node##_object_name);                                                                                              \
+        if (object_name == nullptr) {                                                                                                                                         \
             SCENE_TEST_FAIL_MESSAGE(String(#root_node_class_name), "node is a nullptr");                                                                                      \
-            break;                                                                                                                                                            \
+            goto null_##object_name;                                                                                                                                          \
         }                                                                                                                                                                     \
         SCENE_TEST_PASS_MESSAGE(String(scene_path));                                                                                                                          \
     } while (0);

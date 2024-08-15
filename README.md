@@ -54,8 +54,7 @@ void test_custom_object() {
 }
 
 void test_custom_scene() {
-    // The TEST_SCENE macro can be used to test scenes, it will try to load the scene, let you know if it fails, and will "return" the root node of the scene to allow you to perform more tests on it.
-    Control *root_node; // A pointer to a variable named root_node has to be declared before TEST_SCENE and passed into it. This is kinda stupid but the only alternative (I could think of) is passing in a custom function, which seemed more stupid than this somehow.
+    Control *root_node;
     TEST_SCENE("res://scenes/main_menu.tscn", Control, root_node)
 
     // Note that TEST_SCENE will do the NULL_CHECK for you on root_node...so you can be 100% sure it will exist after TEST_SCENE is run otherwise the code will have returned.
@@ -65,9 +64,12 @@ void test_custom_scene() {
         "visibility", root_node->is_visible()
     )
 
+    TEST_SCENE_END(root_node)  // TEST_SCENE_END must be put at the end of the thing TEST_SCENE is testing so it can clean itself up, see SFT.hpp for more info.
+
     // Additional checks are optional, if you don't pass in any more it will still test if the scene is possible to instantiate.
     Control *broken_root_node
     TEST_SCENE("res://scenes/broken_scene.tscn", Control, broken_root_node)
+    TEST_SCENE_END(broken_root_node)
 }
 
 // clang-format on
