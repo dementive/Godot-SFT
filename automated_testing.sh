@@ -1,18 +1,24 @@
 #!/bin/bash
 
+# Create an empty output file for Godot's output
+touch output.txt
+
+# Run Godot in headless mode and redirect both stdout and stderr to output.txt
+usr/bin/godot -e --headless --quit &> output.txt
 output_file_path="output.txt"
-failed_tests=()
-content=$(cat "$output_file_path")
-for line in $content; do
-    if [[ $line == *"Failed"* ]]; then
-        failed_tests+=("$line")
-    fi
-done
 
-rm "$output_file_path"
+# Search the output file for lines containing "Failed" and redirect them to failed_tests.txt
+grep "Failed" "$output_file_path" > failed_tests.txt
+rm $output_file_path
 
-if (( ${#failed_tests[@]} > 0 )); then
+# Check if the failed_tests.txt file contains any lines indicating failures
+if [[ -s failed_tests.txt ]]; then
+    # If there are failed tests, print a message and display the contents of failed_tests.txt
+    echo "Failed tests:"
+    cat failed_tests.txt
+    rm failed_tests.txt
     exit 1
 else
+    rm failed_tests.txt
     exit 0
 fi
