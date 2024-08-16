@@ -2,7 +2,8 @@
 
 Godot-SFT is a extremely simple testing library for Godot 4 GDExtension C++ that allows you to easily test your extension code with C++ macros.
 
-After a lot of searching I couldn't find a single testing framework for C++ that wasn't either a massive pain to get working with gdextension or just way too complicated for no good reason. So here is my stupid simple testing "library" that does everytihng I will ever need it to do.
+After a lot of searching I couldn't find a single testing framework for C++ that wasn't either a massive pain to get working with gdextension or just way too complicated for no good reason. So here is my stupid simple testing "library" that does everything I will ever need it to do.
+
 
 ## Example Usage
 
@@ -161,14 +162,39 @@ The tests can be run from anywhere in your gdextension code, running them from t
 
 
 ## Automated Testing
-Setting up automated testing is easy and you should do it. If your tests print to stdout (they will unless you change SFT.hpp) you can call godot with `godot -e --headless --quit` in your project's root to get godot to print your test results and then immediately quit.
-I have provided a simple script: `automated_testing.gd` that can be run with the following command to automate tests using something like pre-commit or github actions:
+Setting up automated testing is easy and you should do it. It only takes a few minutes to setup and can go a long way in preventing regressions in your code. If your tests print to stdout (they will unless you change SFT.hpp) you can call godot with `godot -e --headless --quit` in your project's root to get godot to print your test results and then immediately quit.
+I have provided 2 simple scripts (you only need 1) `automated_testing.gd` and `automated_testing.sh` that can be run with the following commands to automate tests using something like pre-commit or github actions:
 
+With the gdscript:
 ```bash
 touch output.txt && godot -e --headless --quit > output.txt && godot --headless --script ./automated_testing.gd
 ```
 
-This command will check if any of the tests failed and if any of them do the return code will be -1.
+With the bash script:
+```bash
+touch output.txt && godot -e --headless --quit > output.txt && ./automated_testing.sh
+```
+
+Or if you don't want to save a seperate script you can do it with this totally not disgusting bash one liner:
+```bash
+bash -c 'touch output.txt && /home/dm/Documents/GameDev/godot/bin/godot.linuxbsd.editor.x86_64 -e --headless --quit &> output.txt && output_file_path="output.txt"; grep "Failed" "$output_file_path" > failed_tests.txt; rm $output_file_path; if [[ -s failed_tests.txt ]]; then echo "Failed tests:"; cat failed_tests.txt; rm failed_tests.txt; exit 1; else rm failed_tests.txt; exit 0; fi;'
+```
+
+I also provide a `.pre-commit-config.yaml` file that you can use as a template to quickly setup [pre-commit](https://pre-commit.com/). It will format and lint all the common components of any godot project in these steps:
+
+1. [ruff](https://github.com/astral-sh/ruff) to lint and format all your scons/python code.
+2. [gdscript linter and formatter](https://github.com/Scony/godot-gdscript-toolkit) to lint and format all your gdscript code.
+3. [clang-format](https://github.com/llvm/llvm-project/tree/main/clang/tools/clang-format) to format all your C++ code (you will need to change the `find` command in the pre-commit config unless you somehow organize your code exactly like I do)
+4. Finally it will run all your SFT tests.
+
+pre-commit will run all this before you make any commits so any code you commit will have to be formatted and tested before it even gets committed.
+
+To add this to your project:
+1. Install pre-commit with `sudo pacman -S pre-commit`
+2. Copy the `.pre-commit-config.yaml` from this repo into the root of your repository
+3. Run `pre-commit install`. Now pre-commit will run all the checks before you make any new commits! You can test if it is working with `pre-commit run --all-files`
+
+This setup for pre-commit I've provided will only work on Linux, if you are on Windows you'll have to figure out how to setup the automated testing on your own.
 
 ## Official SFT Haiku
 
