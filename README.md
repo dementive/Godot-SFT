@@ -44,20 +44,18 @@ void test_dictionary() {
 }
 
 void test_custom_object() {
-    TEST_POINTER(CustomObject, custom_object) // TEST_POINTER safely tests a pointer to an object in a way that will never crash and never skip any other tests, see SFT.hpp for more info.
+    TEST_OBJECT(CustomObject, custom_object) // TEST_OBJECT safely tests an object in a way that will never skip any other tests (unless your test code causes a crash), see SFT.hpp for more info.
     NAMED_TESTS(
-        "custom_object_tests",
-        "CustomObject get_name", STRING_CHECK(custom_object->get_name(), "WrongName"),
-        "CustomObject get_custom_function", VAR_CHECK(custom_object->get_custom_function(), "CustomFunctionReturn")
+        "CustomObject",
+        "get_name", STRING_CHECK(custom_object->get_name(), "WrongName"),
+        "get_custom_function", VAR_CHECK(custom_object->get_custom_function(), "CustomFunctionReturn")
     )
-    TEST_POINTER_END(custom_object) // TEST_POINTER_END must be put at the end of the thing TEST_POINTER is testing so it can clean itself up. 
+    TEST_OBJECT_END(custom_object) // TEST_OBJECT_END must be put at the end of the thing TEST_OBJECT is testing so it can clean itself up. 
 }
 
 void test_custom_scene() {
     Control *root_node;
-    TEST_SCENE("res://scenes/main_menu.tscn", Control, root_node)
-
-    // Note that TEST_SCENE will do the NULL_CHECK for you on root_node...so you can be 100% sure it will exist after TEST_SCENE is run otherwise the code will have returned.
+    TEST_SCENE("res://scenes/main_menu.tscn", Control, root_node) // Same API as TEST_OBJECT but it instantiates the scene and from it's path.
 
     NAMED_TESTS(
         "MainMenu Tests",
@@ -110,7 +108,7 @@ Check if size is 3                                | Passed
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 custom_object_tests
 CustomObject nullptr test                         | Passed
-CustomObject get_name                             | Failed [Tests.cpp:38] - custom_object->get_name() = StringName("WrongName")
+CustomObject get_name                             | Failed [Tests.cpp:41] - custom_object->get_name() = StringName("WrongName")
 CustomObject get_custom_function                  | Passed
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 MainMenu Tests

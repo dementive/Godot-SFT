@@ -34,10 +34,9 @@
 // Defines to use in your test conditions and checks
 #define VAR_CHECK(first, second) first == godot::Variant(second)
 #define STRING_CHECK(first, second) first == godot::StringName(second)
-#define NUM_CHECK(first, second) first == second
 
 /*
-Checks if a pointer is null, if it is report the check as failed and goto the null_##first label with goto.
+Checks if a pointer is null, if it is report the check as failed and goto the null_first label with goto.
 
 Why use goto here? It seems to be the only way to:
 1. Perform the null check
@@ -58,12 +57,12 @@ So I think this is a phenomenal use case for goto. Clangd will also let you know
     }
 
 /*
-Make sure to use TEST_POINTER_END on object_name after this at some point or it won't compile.
-Note that because of the goto usage in NULL_CHECK if you declare any variables after TEST_POINTER and before TEST_POINTER_END they will have to be wrapped in a scoped block
+Make sure to use TEST_OBJECT_END on object_name after this at some point or it won't compile.
+Note that because of the goto usage in NULL_CHECK if you declare any variables after TEST_OBJECT and before TEST_OBJECT_END they will have to be wrapped in a scoped block
 "{}"" or the goto will not compile. More info here: https://stackoverflow.com/a/14274292
 Example:
 _ALWAYS_INLINE_ void test_gui() {
-    TEST_POINTER(Control, main_menu)
+    TEST_OBJECT(Control, main_menu)
     {
         int x = 0; // Declaring this variable makes it so you have to do a scoped block :(
         main_menu->get_name();
@@ -72,23 +71,23 @@ _ALWAYS_INLINE_ void test_gui() {
             "MainMenu get_name", STRING_CHECK(main_menu->get_name(), "Menu"),
         )
     }
-    TEST_POINTER_END(main_menu)
+    TEST_OBJECT_END(main_menu)
 
     // If you do the same thing without any variable declarations you don't need the scoped block.
-    TEST_POINTER(Control, loading_screen)
+    TEST_OBJECT(Control, loading_screen)
     loading_screen->get_name();
     NAMED_TESTS(
         "loading_screen_tests",
         "LoadingScreen get_name", STRING_CHECK(star->loading_screen(), "LoadingScreen"),
     )
-    TEST_POINTER_END(loading_screen)
+    TEST_OBJECT_END(loading_screen)
 }
 */
-#define TEST_POINTER(class_name, object_name)                                                                                                                                 \
+#define TEST_OBJECT(class_name, object_name)                                                                                                                                  \
     class_name *object_name = memnew(class_name());                                                                                                                           \
     NULL_CHECK(object_name)
 
-#define TEST_POINTER_END(object_name) null_##object_name : memdelete(object_name);
+#define TEST_OBJECT_END(object_name) null_##object_name : memdelete(object_name);
 #define TEST_SCENE_END(object_name) null_##object_name :;
 
 // Defines you or I will never need to change (hopefully)
@@ -100,7 +99,7 @@ inline int SFT_check_number = 1;
 
 // This uses a do-while loop to avoid if/else nesting hell while also not using a return statement to allow multiple TEST_SCENE calls in a single function.
 // The nullptr check does return though to prevent object_name access crashing the program.
-// TEST_SCENE works pretty much exactly like TEST_POINTER. Make sure to call TEST_SCENE_END at the end of the test.
+// TEST_SCENE works pretty much exactly like TEST_OBJECT. Make sure to call TEST_SCENE_END at the end of the test.
 #define TEST_SCENE(scene_path, root_node_class_name, object_name)                                                                                                             \
     root_node_class_name *object_name;                                                                                                                                        \
     do {                                                                                                                                                                      \
