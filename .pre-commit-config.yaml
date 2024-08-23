@@ -29,6 +29,6 @@ repos:
       - id: gdextension-tests
         name: gdextension-tests
         description: This hook runs all of your project's SFT test code using a disgusting bash one liner.
-        entry: bash -c 'touch output.txt && /usr/bin/godot -e --headless --quit &> output.txt && output_file_path="output.txt"; grep "Failed" "$output_file_path" > failed_tests.txt; rm $output_file_path; if [[ -s failed_tests.txt ]]; then echo "Failed tests:"; cat failed_tests.txt; rm failed_tests.txt; exit 1; else rm failed_tests.txt; exit 0; fi;'
+        entry: bash -c 'touch output.txt && /usr/bin/godot --headless --quit &> output.txt && output_file_path="output.txt"; grep "Failed" "$output_file_path" > failed_tests.txt; rm $output_file_path; if [[ -s failed_tests.txt ]]; then echo "Failed tests:"; cat failed_tests.txt; rm failed_tests.txt; exit 1; else rm failed_tests.txt; exit 0; fi;'
         language: system
         pass_filenames: false
