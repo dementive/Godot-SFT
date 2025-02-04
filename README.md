@@ -51,7 +51,7 @@ void test_custom_object() {
         "get_name", STRING_CHECK(custom_object->get_name(), "WrongName"),
         "get_custom_function", VAR_CHECK(custom_object->get_custom_function(), "CustomFunctionReturn")
     )
-    TEST_OBJECT_END(custom_object) // TEST_OBJECT_END must be put at the end of the thing TEST_OBJECT is testing so it can clean itself up. 
+    TEST_OBJECT_END(custom_object) // TEST_OBJECT_END must be put at the end of the thing TEST_OBJECT is testing so it can clean itself up.
 }
 
 void test_custom_scene() {
@@ -134,6 +134,7 @@ def generate(env):
     if env.get("is_msvc", False):
         env["CXXFLAGS"].remove("/std:c++17")
         env["CXXFLAGS"].insert(0, "/std:c++20")
+        env["CXXFLAGS"].insert(0, "/Zc:preprocessor")
     else:
         env["CXXFLAGS"].remove("-std=c++17")
         env["CXXFLAGS"].insert(0, "-std=c++20")
