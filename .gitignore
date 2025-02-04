@@ -1,0 +1,26 @@
+# Godot 4+ specific ignores
+demo/game/.godot
+
+# Clangd cache files
+*.idx
+
+# Scons
+*.dblite
+.sconf_temp
+*.pyc
+
+# Binaries
+*.os
+*.dll
+*.so
+
+# Random stuff
+compile_commands.json
+
+# MacOS
+.DS_Store
+
+# Editors
+.vscode/
+/.cache
+*.pck

@@ -50,7 +50,7 @@ So I think this is a phenomenal use case for goto. Clangd will also let you know
 		TEST_FAIL(godot::vformat("%s nullptr check", #object), godot::vformat("%s is a nullptr!", #object))                                                                                  \
 		goto null_##object;                                                                                                                                                                  \
 	} \
-	{ // Open goto scope, gets closed in TEST_OBJECT_END
+	{ // Open goto scope, gets closed in OBJECT_END
 
 /*
 Make sure to use TEST_OBJECT_END on object_name after this at some point or it won't compile.
