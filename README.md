@@ -187,11 +187,3 @@ To add this to your project:
 3. Run `pre-commit install`. Now pre-commit will run all the checks before you make any new commits! You can test if it is working with `pre-commit run --all-files`
 
 This setup for pre-commit I've provided will only work on Linux, if you are on Windows you'll have to figure out how to setup the automated testing on your own.
-
-## Official SFT Haiku
-
-Testing is stupid
-
-I hate stupid fucking tests
-
-Why must I test it
